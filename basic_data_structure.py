@@ -134,3 +134,189 @@ class Array:
         # if value was matched then return -1
         else:
             return -1
+class LinkedList:
+    """
+    A LinkedList Data Structure
+    """
+    def __init__(self):
+        """
+        Intitalisation of LinkedList Structure
+        """
+        self.first_node = self.Node()
+        self.last_node = self.Node()
+        self.list_size = 0
+
+    class Node:
+        """
+        Node object which contains value and address of next object
+        """
+        def __init__(self,value = None,next = None):
+            self.value = value
+            self.next = next
+
+    def addLast(self, value):
+        """
+        Add a value in the last of linked list
+        ----------
+        Parameter
+        ----------
+        value : int / str
+        value you want to add in the list
+        """
+        node = self.Node(value)
+        # if the list is empty
+        if self.first_node.value is None:
+            self.first_node = node
+            self.last_node = node
+        # if array has more than zero elements
+        else:
+            self.last_node.next = node
+            self.last_node = node
+        # incrementing the size of list
+        self.list_size += 1
+
+    def addFirst(self, value):
+        """
+        Add a value at the first of linked list
+        ----------
+        Parameter
+        ----------
+        value : int / str
+        value you want to add in the list
+        """
+        node = self.Node(value)
+        # if the list is empty
+        if self.first_node.value is None:
+            self.first_node = node
+            self.last_node = node
+        # if array has more than zero elements
+        else:
+            node.next = self.first_node
+            self.first_node = node
+        # incrementing the size of list
+        self.list_size += 1
+
+    def indexOf(self, value)-> int:
+        """
+        Find out the index of the input value in the list
+        return -1 if value not present in the list
+        ----------
+        Parameter
+        ----------
+        value : int / str
+        value for which you want to find index for
+        """
+        index = 0
+        current = self.first_node
+        while current is not None:
+            if current.value == value:
+                return index
+            else:
+                current = current.next
+            index += 1
+        # if value is not in the list
+        return -1
+
+    def contains(self,value):
+        """
+        checck whether the value is present in the list
+        ----------
+        Parameter
+        ----------
+        value : int / str
+        the value
+        """
+        return self.indexOf(value) != -1
+
+    def removeFirst(self):
+        """
+        remove first element from the list
+        """
+        # if list is empty
+        if self.first_node.value is None:
+            raise Exception('No such element Found')
+        # if list only has one value
+        elif self.first_node == self.last_node:
+            self.first_node, self.last_node = None, None
+        # if list has more than one value
+        else:
+            self.first_node, self.first_node.next = self.first_node.next, None
+        self.list_size -= 1
+
+    def removeLast(self):
+        """
+        remove last element from the list
+        """
+        # if list is empty
+        if self.first_node.value is None:
+            raise Exception('No such element Found')
+
+
+        current = self.first_node
+        while current != None:
+            if current.next == self.last_node:
+                break
+            current = current.next
+
+        # if list only has one value
+        if self.first_node == self.last_node:
+            self.first_node, self.last_node = None, None
+        else:
+            current.next, self.last_node = None, current
+        self.list_size -= 1
+
+    def size(self):
+        """
+        find out the size of list
+        """
+        return self.list_size
+
+    def toArray(self):
+        """
+        convert the LinkedList to Array
+        """
+        converted_array = Array('int')
+        current = self.first_node
+        while current != None:
+            converted_array.insert(current.value)
+            current = current.next
+        return converted_array
+
+    def reverse(self):
+        """
+        we reverse the linkedlist
+        """
+        # if there is no items in list then we just return none
+        if self.first_node.value is None:
+            return None
+
+        # we reverse the links in the list
+        previous = self.first_node
+        current = self.first_node.next
+        while current != None:
+            next = current.next
+            current.next = previous
+            previous = current
+            current = next
+
+        # change the first and last head and clear the next reference in last pointer
+        self.last_node = self.first_node
+        self.last_node.next = None
+        self.first_node = previous
+
+    def Kth_node_from_last(self, k):
+
+        # handeling cases when k is less than equal
+        if k > self.list_size and k > 0:
+            raise Exception('Invalid K argument. It should be grater than 0 and less than size of list')
+        if k == self.list_size:
+            return self.first_node
+
+        a = self.first_node
+        b = self.first_node
+        for i in range(k-1):
+            b = b.next
+        while b != self.last_node:
+            a = a.next
+            b = b.next
+        return a
