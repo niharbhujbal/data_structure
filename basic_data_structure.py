@@ -2,7 +2,8 @@ class Array:
     """
     An Array Data Structure
     """
-    def __init__(self, datatype : str, length: int = 0 ):
+
+    def __init__(self, datatype: str, length: int = 0):
         """
         Intitalisation of Array Structure
         -------------
@@ -15,10 +16,10 @@ class Array:
         """
         self.length = length
         self.datatype = datatype
-        if self.datatype == 'int':
+        if self.datatype == "int":
             self.items = [0] * self.length
-        elif self.datatype == 'str':
-            self.items = [''] * self.length
+        elif self.datatype == "str":
+            self.items = [""] * self.length
 
     def print_items(self):
         """
@@ -45,11 +46,14 @@ class Array:
         for which function you want to use this validation
         values can be 'insert' or 'remove'
         """
-        if (index < 0) or (function == 'insert' and index > self.length) or (function == 'remove' and index >= self.length):
-            raise IndexError('Index Out of range')
+        if (
+            (index < 0)
+            or (function == "insert" and index > self.length)
+            or (function == "remove" and index >= self.length)
+        ):
+            raise IndexError("Index Out of range")
 
-
-    def insert(self, value, index = None):
+    def insert(self, value, index=None):
         """
         Insert a value at the end of array if no index is given.
         with a index it will add the value in that location of the array
@@ -62,16 +66,16 @@ class Array:
         index at which you want to insert the value. by default it will insert item at the end
         """
         # defining default value of Index
-        if index is None :
+        if index is None:
             index = self.length
 
         # validate the index
-        self._validate_index(index,'insert')
+        self._validate_index(index, "insert")
 
-        if self.datatype == 'int':
-            new_items = [0] * (self.length+1)
-        elif self.datatype == 'str':
-            new_items = [''] * (self.length+1)
+        if self.datatype == "int":
+            new_items = [0] * (self.length + 1)
+        elif self.datatype == "str":
+            new_items = [""] * (self.length + 1)
         new_index = 0
 
         # if the value we want to insert is between the array
@@ -101,14 +105,14 @@ class Array:
         index from which you want to remove the value
         """
         # validate the index
-        self.validate_index(index,'remove')
+        self.validate_index(index, "remove")
 
         # copy all the elements to left side of array
         for inside_index in range(index + 1, self.length):
-            self.items[inside_index-1] = self.items[inside_index]
+            self.items[inside_index - 1] = self.items[inside_index]
 
         # delete last elemnet of the array
-        del self.items[self.length-1]
+        del self.items[self.length - 1]
         self.length -= 1
 
     def indexOf(self, value: int) -> int:
@@ -134,10 +138,13 @@ class Array:
         # if value was matched then return -1
         else:
             return -1
+
+
 class LinkedList:
     """
     A LinkedList Data Structure
     """
+
     def __init__(self):
         """
         Intitalisation of LinkedList Structure
@@ -150,7 +157,8 @@ class LinkedList:
         """
         Node object which contains value and address of next object
         """
-        def __init__(self,value = None,next = None):
+
+        def __init__(self, value=None, next=None):
             self.value = value
             self.next = next
 
@@ -196,7 +204,7 @@ class LinkedList:
         # incrementing the size of list
         self.list_size += 1
 
-    def indexOf(self, value)-> int:
+    def indexOf(self, value) -> int:
         """
         Find out the index of the input value in the list
         return -1 if value not present in the list
@@ -217,7 +225,7 @@ class LinkedList:
         # if value is not in the list
         return -1
 
-    def contains(self,value):
+    def contains(self, value):
         """
         checck whether the value is present in the list
         ----------
@@ -234,7 +242,7 @@ class LinkedList:
         """
         # if list is empty
         if self.first_node.value is None:
-            raise Exception('No such element Found')
+            raise Exception("No such element Found")
         # if list only has one value
         elif self.first_node == self.last_node:
             self.first_node, self.last_node = None, None
@@ -249,8 +257,7 @@ class LinkedList:
         """
         # if list is empty
         if self.first_node.value is None:
-            raise Exception('No such element Found')
-
+            raise Exception("No such element Found")
 
         current = self.first_node
         while current != None:
@@ -275,7 +282,7 @@ class LinkedList:
         """
         convert the LinkedList to Array
         """
-        converted_array = Array('int')
+        converted_array = Array("int")
         current = self.first_node
         while current != None:
             converted_array.insert(current.value)
@@ -305,16 +312,17 @@ class LinkedList:
         self.first_node = previous
 
     def Kth_node_from_last(self, k):
-
         # handeling cases when k is less than equal
         if k > self.list_size and k > 0:
-            raise Exception('Invalid K argument. It should be grater than 0 and less than size of list')
+            raise Exception(
+                "Invalid K argument. It should be grater than 0 and less than size of list"
+            )
         if k == self.list_size:
             return self.first_node
 
         a = self.first_node
         b = self.first_node
-        for i in range(k-1):
+        for i in range(k - 1):
             b = b.next
         while b != self.last_node:
             a = a.next
