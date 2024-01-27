@@ -328,3 +328,188 @@ class LinkedList:
             a = a.next
             b = b.next
         return a
+
+
+class Stack:
+    """
+    A Stack Data Structure using Array
+    """
+
+    def __init__(self, datatype: str, height: int):
+        """
+        Intitalisation of Stack Structure
+        -------------
+        Parameters
+        -------------
+        datatype : str
+          the datatype of the stack
+        height : int
+          height of the array
+        """
+        self.stack_data = Array(datatype, height)
+        self.height = 0
+
+    def print_items(self):
+        """
+        Print all the items in Stack bottom up
+        """
+        counter = 0
+        for item in self.stack_data:
+            if counter < self.height:
+                print(item)
+            counter += 1
+
+    def push(self, value):
+        """
+        Push an item into stack
+        -------------
+        Parameters
+        -------------
+        value : str / int
+          item you want to push in stack
+        """
+        # if the stack is full
+        if (self.height + 1) > self.stack_data.length:
+            raise Exception("Stack Over Flow Error")
+        # otherwise just incert the value
+        else:
+            self.stack_data.insert(value, self.height)
+            self.height += 1
+            self.stack_data.removeAt(self.height)
+
+    def pop(self):
+        """
+        Get the top item on the stack and remove it from stack
+        """
+        # if stack is empty
+        if self.isEmpty():
+            raise Exception("Stack is Empty")
+        else:
+            item = self.stack_data.items[self.height - 1]
+            if self.stack_data.datatype == "int":
+                self.stack_data.insert(0, self.height - 1)
+            elif self.stack_data.datatype == "str":
+                self.stack_data.insert("0", self.height - 1)
+            self.stack_data.removeAt(self.height)
+            self.height -= 1
+            return item
+
+    def peek(self):
+        """
+        look at the top item of stack. this does not remove the item from stack
+        """
+        if self.height - 1 < 0:
+            return None
+        else:
+            return self.stack_data.items[self.height - 1]
+
+    def isEmpty(self) -> bool:
+        """
+        Returns whether the stack is empty
+        """
+        return self.height == 0
+
+
+class Queues:
+    """
+    An Queue Data Structure
+    """
+
+    def __init__(self, datatype: str, length: int):
+        """
+        Intitalisation of Queue Structure
+        -------------
+        Parameters
+        -------------
+        datatype : str
+          the datatype of the queue
+        length : int
+          length of queue
+        """
+        self.queue_data = Array(datatype, length)
+        self.rear = 0
+
+    def enqueue(self, value):
+        """
+        add the value at the end of the queue
+        -------------
+        Parameters
+        -------------
+        value : int / str
+          value we want to add
+        """
+        if self.isFull():
+            raise Exception("Queue is Full")
+        else:
+            self.queue_data.insert(value, self.rear)
+            self.rear += 1
+            self.queue_data.removeAt(self.rear)
+
+    def dequeue(self):
+        """
+        get the first value in the queue and delete it from queue
+        """
+        if self.isEmpty():
+            raise Exception("Queue is Empty")
+        else:
+            item = self.queue_data.items[0]
+            self.queue_data.removeAt(0)
+            self.queue_data.insert(0)
+            self.rear -= 1
+            return item
+
+    def peek(self):
+        """
+        Look at the first value in queue. it does not delete the value from queue
+        """
+        if self.rear == 0:
+            return None
+        else:
+            return self.queue_data.items[0]
+
+    def isEmpty(self) -> bool:
+        """
+        Boolen vaue whether the queue is empty
+        """
+        return self.rear == 0
+
+    def isFull(self) -> bool:
+        """
+        Boolen value whether the queue is full
+        """
+        return self.rear == self.queue_data.length
+
+
+class PriorityQueue(Queues):
+    """
+    a Priority Queue Data Structure
+    """
+
+    def __init__(self, datatype: str, length: int):
+        """
+        Intitalisation of Queue Structure
+        """
+        super().__init__(datatype, length)
+
+    def add(self, value):
+        """
+        adds the value based on the items in the queue such that queue is kept in ascending order
+        -------------
+        Parameters
+        -------------
+        value : int / str
+          value we want to add
+        """
+        if self.isFull():
+            raise Exception("Queue is Full")
+        elif self.isEmpty():
+            self.enqueue(value)
+        else:
+            for index_ in range(self.rear):
+                if value <= self.queue_data.items[index_]:
+                    self.queue_data.insert(value, index_)
+                    self.queue_data.removeAt(self.rear + 1)
+                    self.rear += 1
+                    break
+            else:
+                self.enqueue(value)
