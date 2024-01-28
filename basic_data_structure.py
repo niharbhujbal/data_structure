@@ -513,3 +513,137 @@ class PriorityQueue(Queues):
                     break
             else:
                 self.enqueue(value)
+
+
+class HashTable:
+    """
+    A Hash Map Data Structure
+    """
+
+    class Entry:
+        """
+        Entry Class to Enter key value pairs in Hash Map
+        """
+
+        def __init__(self, key, value):
+            """
+            Intitalisation of Entry class
+            -------------
+            Parameters
+            -------------
+            key : int / str
+              key we want to use
+            value : int / str
+              value pair for the key
+            """
+            self.key = key
+            self.value = value
+
+    def __init__(self, list_size):
+        """
+        Intitalisation of Hash Tabel Structure
+        -------------
+        Parameters
+        -------------
+        list_size : int
+          size of hash table
+        """
+        self.list_size = list_size
+        self.entries = [None] * list_size
+
+    def hash_function(self, key):
+        """
+        Gives the address value of the key in hash table
+        -------------
+        Parameters
+        -------------
+        key : int / str
+          key we want to use
+        """
+        return key % self.list_size
+
+    def put(self, key, value):
+        """
+        Insert the key value pair in hash map
+        -------------
+        Parameters
+        -------------
+        key : int / str
+          key we want to use
+        value : int / str
+          value pair for the key
+        """
+        # we are using chaining collision method
+        index = self.hash_function(key)
+        entry = self.Entry(key, value)
+        if self.entries[index] is None:
+            linked_list = LinkedList()
+            linked_list.addLast(entry)
+            self.entries[index] = linked_list
+        else:
+            bucket = self.entries[index]
+            current = bucket.first_node
+            for node in range(bucket.list_size):
+                # key is already present we overwrite value
+                if current.value.key == key:
+                    current.value.value = value
+                    break
+                else:
+                    current = current.next
+            # if key is not present we add the value at the end
+            else:
+                bucket.addLast(entry)
+
+    def get(self, key):
+        """
+        Get the value for a specific key in hash map
+        -------------
+        Parameters
+        -------------
+        key : int / str
+          key we want value for
+        """
+        index = self.hash_function(key)
+        bucket = self.entries[index]
+        current = bucket.first_node
+        for node in range(bucket.list_size):
+            # key is already present we overwrite value
+            if current.value.key == key:
+                return current.value.value
+            else:
+                current = current.next
+        return None
+
+    def remove(self, key):
+        """
+        remove the key value pair from hashmap
+        -------------
+        Parameters
+        -------------
+        key : int / str
+          key we want to remove
+        """
+        index = self.hash_function(key)
+        if self.entries[index] is None:
+            raise Exception("Key not present")
+        elif self.entries[index].list_size == 1:
+            if self.entries[index].first_node.value.key == key:
+                self.entries[index] = None
+            else:
+                raise Exception("Key not present")
+        else:
+            bucket = self.entries[index]
+            new_bucket = LinkedList()
+            current = bucket.first_node
+            removed = False
+            for node in range(bucket.list_size):
+                if current.value.key == key:
+                    current = current.next
+                    removed = True
+                else:
+                    new_bucket.addLast(current.value)
+                    current = current.next
+            if removed:
+                self.entries[index] = new_bucket
+            else:
+                raise Exception("Key not present")
