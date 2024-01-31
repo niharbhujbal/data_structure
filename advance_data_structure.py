@@ -1036,3 +1036,189 @@ class Graph:
                 return True
             visiting.remove(neighbour)
         return False
+
+
+class WeightedGraph:
+    """
+    An Weighted Graph Data Structure
+    """
+
+    class Node:
+        """
+        Weighted graph Node
+        """
+
+        class Edge:
+            """
+            Edge of nodes
+            """
+
+            def __init__(self, from_node, to_node, weight):
+                """
+                Intitalisation of edge
+                -------------
+                Parameters
+                -------------
+                from_node : self.Node
+                    starting node of edge
+                to_node : self.Node
+                    ending node for the edge
+                weight : int
+                    weight of the edge
+                """
+                self.to_node = to_node
+                self.from_node = from_node
+                self.weight = weight
+
+        def __init__(self, label):
+            """
+            Intitalisation of weighted graph node
+            """
+            self.label = label
+            self.edges = []
+
+        def add_edge(self, to_node, weight):
+            """
+            add an edge to the node
+            -------------
+            Parameters
+            -------------
+            to_node : self.Node
+                ending node for the edge
+            weight : int
+                weight of the edge
+            """
+            self.edges.append(self.Edge(self, to_node, weight))
+
+        def get_edges(self):
+            """
+            get all the edges of the node
+            """
+            return self.edges
+
+    def __init__(self):
+        """
+        Intitalisation of weighted graph
+        """
+        self.nodes = {}
+
+    def add_node(self, label):
+        """
+        add node in the graph
+        -------------
+        Parameters
+        -------------
+        label : str
+            label for the node
+        """
+        node = self.Node(label)
+        self.nodes[label] = node
+
+    def _read_node(self, node_label):
+        """
+        geatting the node in the graph which has the label
+        -------------
+        Parameters
+        -------------
+        node_label : str
+            label for the node
+        """
+        if node in self.nodes.keys():
+            node = self.nodes[node_label]
+        else:
+            raise Exception("Node not present in Graph")
+        return node
+
+    def add_edge(self, from_node_label, to_node_label, weight):
+        """
+        add edge in the graph
+        -------------
+        Parameters
+        -------------
+        from_node_label : str
+            starting node of edge
+        to_node_label : str
+            ending node for the edge
+        weight : int
+            weight of the edge
+        """
+        from_node = self._read_node(from_node_label)
+        to_node = self._read_node(to_node_label)
+
+        # undirected graph
+        from_node.add_edge(to_node, weight)
+        to_node.add_edge(from_node, weight)
+
+    class NodeEntry:
+        def __init__(self, node, priority):
+            self.node = node
+            self.priority = priority
+
+    def get_shortest_path(self, from_node, to_node):
+        from_node = self._read_node(from_node)
+        to_node = self._read_node(to_node)
+
+        distances = {}
+        previous_nodes = {}
+        visited = set()
+        for node in self.nodes.values():
+            distances[node] = float("inf")
+        distances[from_node] = 0
+
+        priority_queue = [self.NodeEntry(from_node, 0)]
+
+        while len(priority_queue) != 0:
+            current = priority_queue[0]
+            priority_queue.pop(0)
+            visited.add(current.node)
+
+            for neighbour in current.node.get_edges():
+                if neighbour.to_node in visited:
+                    continue
+                new_distance = distances[current.node] + neighbour.weight
+                if new_distance < distances[neighbour.to_node]:
+                    distances[neighbour.to_node] = new_distance
+
+                    # adding it to priority queue and sorty it by priority
+                    priority_queue.append(
+                        self.NodeEntry(neighbour.to_node, new_distance)
+                    )
+                    sorted(priority_queue, key=lambda x: x.priority)
+
+                    previous_nodes[neighbour.to_node] = current.node
+
+        # creating the shortest path
+        shortest_path = [to_node]
+        current = to_node
+        while current != from_node:
+            current = previous_nodes[current]
+            shortest_path.append(current)
+
+        shortest_path = [i.label for i in shortest_path]
+        return shortest_path
+
+    def has_cycle(self):
+        """
+        check if the graph has cycle in it
+        """
+        for node in self.nodes.values():
+            visiting = set()
+            if self._has_cycle(node, None, visiting):
+                return True
+        return False
+
+    def _has_cycle(self, node, parent, visited):
+        """
+        Private method to check if the graph has cycle
+        """
+        visited.add(node)
+
+        for edge in node.get_edges():
+            if edge.to_node == parent:
+                continue
+            if edge.to_node in visited:
+                return True
+
+            if self._has_cycle(edge.to_node, node, visited):
+                return True
+        return False
