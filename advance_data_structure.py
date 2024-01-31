@@ -825,3 +825,214 @@ class Tries:
                     node = child_node
 
         return node
+
+
+class Graph:
+    """
+    An Graph Data Structure
+    """
+
+    class Node:
+        """
+        Graph Node
+        """
+
+        def __init__(self, label):
+            """
+            Intitalisation of graph node
+            """
+            self.label = label
+
+    def __init__(self):
+        """
+        Intitalisation of graph
+        """
+        self.nodes = {}
+        self.adjacency_list = {}
+
+    def add_node(self, label):
+        """
+        add a node into graph
+        -------------
+        Parameters
+        -------------
+        label : str
+            label value on the node
+        """
+        node = self.Node(label)
+        self.nodes[label] = node
+        self.adjacency_list[node] = []
+
+    def add_edge(self, from_label, to_label):
+        """
+        add an edge into graph
+        -------------
+        Parameters
+        -------------
+        from_label : str
+            node label for the orignation node
+        to_label : str
+            node label for the edge ending node
+        """
+        if from_label in self.nodes.keys():
+            from_node = self.nodes[from_label]
+        else:
+            raise Exception("Node not present in Graph")
+        if to_label in self.nodes.keys():
+            to_node = self.nodes[to_label]
+        else:
+            raise Exception("Node not present in Graph")
+        self.adjacency_list[from_node].append(to_node)
+
+    def remove_node(self, label):
+        """
+        remove node from graph
+        -------------
+        Parameters
+        -------------
+        label : str
+            label value on the node
+        """
+        # remove from nodes hashmap
+        try:
+            node = self.nodes[label]
+            del self.nodes[label]
+        except:
+            raise Exception("Node not present in Graph")
+        # remove from every node
+        del self.adjacency_list[node]
+        for key, value in self.adjacency_list.items():
+            if node in value:
+                value.remove(node)
+
+    def remove_edge(self, from_label, to_label):
+        """
+        remove an edge from graph
+        -------------
+        Parameters
+        -------------
+        from_label : str
+            node label for the orignation node
+        to_label : str
+            node label for the edge ending node
+        """
+        if from_label in self.nodes.keys():
+            from_node = self.nodes[from_label]
+        else:
+            raise Exception("Node not present in Graph")
+        if to_label in self.nodes.keys():
+            to_node = self.nodes[to_label]
+        else:
+            raise Exception("Node not present in Graph")
+        self.adjacency_list[from_node].remove(to_node)
+
+    def traverse_depth_first(self, root_node_label):
+        """
+        traverse graph with depth first algorithm
+        -------------
+        Parameters
+        -------------
+        root_node_label : str
+            starting node from which you want start depth first algorithm
+        """
+        if root_node_label in self.nodes.keys():
+            self._traverse_depth_first(self.nodes[root_node_label], set())
+        else:
+            return None
+
+    def _traverse_depth_first(self, node, traveled_set):
+        """
+        Private method to implememnt traverse_depth_first
+        """
+        if node.label not in traveled_set:
+            print(node.label)
+            traveled_set.add(node.label)
+        for child_node in self.adjacency_list[node]:
+            traveled_set = self._traverse_depth_first(child_node, traveled_set)
+        return traveled_set
+
+    def traverse(self, node_label, traverse_type="depth-first"):
+        """
+        traverse graph with depth first algorithm
+        -------------
+        Parameters
+        -------------
+        node_label : str
+            starting node from which you want start traverse algorithm
+        traverse_type : str
+            type of traverse we want to do
+            depth-first = depth first traversal
+            breadth-first = breadth first traversal
+        """
+        node = self.nodes[node_label]
+        stack_queue = []
+        visited = set()
+        stack_queue.append(node)
+
+        while not len(stack_queue) == 0:
+            # we use stack for depth
+            if traverse_type == "depth-first":
+                current = stack_queue[-1]
+                stack_queue = stack_queue[:-1]
+            # we use queue for breadth first
+            elif traverse_type == "breadth-first":
+                current = stack_queue[0]
+                stack_queue = stack_queue[1:]
+            if current in visited:
+                continue
+            print(current.label)
+            visited.add(current)
+
+            for neighbour in self.adjacency_list[current]:
+                if neighbour not in visited:
+                    stack_queue.append(neighbour)
+
+    def topological_sorting(self):
+        """
+        Topological sorting of the graph
+        """
+        stack = []
+        visited = set()
+        for node in self.nodes.values():
+            visited, stack = self._topological_sorting(node, visited, stack)
+
+        sorted_list = [node.label for node in stack]
+        return sorted_list
+
+    def _topological_sorting(self, node, visited, stack):
+        """
+        Private method to implememnt topological_sorting
+        """
+        if node in visited:
+            return visited, stack
+
+        visited.add(node)
+
+        for neighbours in self.adjacency_list[node]:
+            visited, stack = self._topological_sorting(neighbours, visited, stack)
+
+        stack.append(node)
+        return visited, stack
+
+    def has_cycle(self):
+        """
+        check if the graph has cycle in it
+        """
+        for node in self.nodes.values():
+            visiting = set()
+            if self._has_cycle(node, visiting):
+                return True
+        return False
+
+    def _has_cycle(self, node, visiting):
+        """
+        Private method to implememnt has_cycle
+        """
+        if node in visiting:
+            return True
+        visiting.add(node)
+        for neighbour in self.adjacency_list[node]:
+            if self._has_cycle(neighbour, visiting):
+                return True
+            visiting.remove(neighbour)
+        return False
