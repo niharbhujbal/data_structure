@@ -607,7 +607,7 @@ class HashTable:
         bucket = self.entries[index]
         current = bucket.first_node
         for node in range(bucket.list_size):
-            # key is already present we overwrite value
+            # find the key and return the value of that key
             if current.value.key == key:
                 return current.value.value
             else:
